@@ -51,6 +51,7 @@ const is_touch_device = () => {
 // /////////////////////////////////////////////
 
 const state = {
+    loading            : false,
     AppActiveUser           : [],
     bodyOverlay             : false,
     isVerticalNavMenuActive : true,
