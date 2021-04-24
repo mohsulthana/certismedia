@@ -2,9 +2,13 @@
 import axios from 'axios'
 
 const baseURL = "http://localhost:8080/"
-// const baseURL = "http://certis-api.fishstock.id/"
+// const baseURL = "https://api.certismedia.com/"
 
-export default axios.create({
-  baseURL: baseURL
-  // You can add your headers here
+const instance = axios.create({
+  baseURL: baseURL,
+  headers: {
+    "Content-Type": "application/json"
+  }
 })
+
+export default instance

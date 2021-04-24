@@ -3,6 +3,9 @@
     <!-- CHAT CARD -->
     <div class="vx-col w-full mb-base">
       <vx-card title="Dashboard" class="overflow-hidden">
+        <template slot="actions">
+          <!-- <vs-button icon="refresh" @click="fetchDataManually">Fetch Data Manually</vs-button> -->
+        </template>
         <vs-table
           v-model="selected"
           stripe
@@ -18,7 +21,7 @@
             <vs-th sort-key="view"> View </vs-th>
             <vs-th sort-key="completed_view"> Completed View </vs-th>
             <vs-th sort-key="ctr"> CTR </vs-th>
-            <vs-th sort-key="win_rate"> Win Rate </vs-th>
+            <!-- <vs-th sort-key="win_rate"> Win Rate </vs-th> -->
           </template>
 
           <template slot-scope="{ data }">
@@ -44,12 +47,12 @@
               </vs-td>
 
               <vs-td :data="data[indextr].ctr">
-                {{ data[indextr].ctr }}%
+                {{ parseFloat(data[indextr].ctr).toFixed(3) }}%
               </vs-td>
 
-              <vs-td :data="data[indextr].win_rate">
-                {{ data[indextr].win_rate }}%
-              </vs-td>
+              <!-- <vs-td :data="data[indextr].win_rate">
+                {{ parseInt(data[indextr].win_rate).toFixed(2) }}%
+              </vs-td> -->
             </vs-tr>
           </template>
         </vs-table>
@@ -72,11 +75,36 @@ export default {
       selected: [],
     };
   },
+  computed: {
+    userStatus() {
+      return this.$store.state.AppActiveUser.status;
+    },
+  },
   methods: {
+    fetchDataManually() {
+      const id = this.$store.state.AppActiveUser.id
+      axios.get(`fetch-dashboard/${id}`)
+        .then(() => {
+          this.fetchImpressions()
+        })
+    },
     fetchImpressions() {
-      const email = this.$store.getters.AppActiveUser;
-      axios.get("dashboard", { email: email }).then((response) => {
-        this.dashboard = response.data;
+      const email = this.$store.state.AppActiveUser.email;
+      axios.get("dashboard", { params: { email: email } }).then((response) => {
+        response.data.forEach((element) => {
+            var ctr = element.ctr
+            if (ctr === null) {
+              return 0
+            }
+          this.dashboard.push({
+            click: element.click,
+            impression: element.impression,
+            campaign_name: element.campaign_name,
+            completed_view: element.completed_view,
+            view: element.view,
+            ctr: ctr
+          })
+        })
       });
     },
     seeDetail(args) {

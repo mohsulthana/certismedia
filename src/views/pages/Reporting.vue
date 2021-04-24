@@ -2,7 +2,15 @@
   <div class="vx-row">
     <!-- CHAT CARD -->
     <div class="vx-col w-full mb-base">
-      <vx-card title="Select your campaign for reporting view" class="overflow-hidden">
+      <vx-card
+        title="Select your campaign for reporting view"
+        class="overflow-hidden"
+      >
+        <template slot="actions">
+          <!-- <vs-button icon="refresh" @click="fetchDataManually"
+            >Fetch Data Manually</vs-button
+          > -->
+        </template>
         <vs-table
           v-model="selected"
           stripe
@@ -44,14 +52,25 @@ export default {
     };
   },
   methods: {
+    fetchDataManually() {
+      const id = this.$store.state.AppActiveUser.id;
+      const email = this.$store.state.AppActiveUser.email;
+
+      axios.get(`fetch-report/${id}`, { params: { email: email } }).then(() => {
+        this.fetchImpressions();
+      });
+    },
     fetchImpressions() {
-      const email = this.$store.getters.AppActiveUser
-      axios.get("dashboard", { email: email }).then((response) => {
+      const email = this.$store.state.AppActiveUser.email;
+      axios.get("dashboard", { params: { email: email } }).then((response) => {
         this.dashboard = response.data;
       });
     },
     seeDetail(args) {
-      return this.$router.push({ path: '/reporting-detail/', query: {id: args.id, campaign: args.campaign_id} });
+      return this.$router.push({
+        path: "/reporting-detail/",
+        query: { id: args.id, campaign: args.campaign_id },
+      });
     },
   },
   mounted() {

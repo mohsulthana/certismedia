@@ -39,10 +39,13 @@
         <vx-card class="overflow-hidden">
           <vs-list>
             <vs-list-header title="Total Delivery"></vs-list-header>
-            <vs-list-item :title="`Impression: ${impression}`"></vs-list-item>
-            <vs-list-item :title="`Click: ${click}`"></vs-list-item>
-            <vs-list-item :title="`CTR: ${ctr}%`"></vs-list-item>
-            <vs-list-item :title="`Win Rate: ${winrate}%`"></vs-list-item>
+            <vs-list-item
+              :title="`Impression: ${formatNumber(impression)}`"
+            ></vs-list-item>
+            <vs-list-item
+              :title="`Click: ${formatNumber(click)}`"
+            ></vs-list-item>
+            <vs-list-item :title="`CTR: ${parseFloat(ctr).toFixed(3)}%`"></vs-list-item>
           </vs-list>
         </vx-card>
       </div>
@@ -89,13 +92,12 @@
               <vs-th sort-key="impression"> Impression </vs-th>
               <vs-th sort-key="click"> Click </vs-th>
               <vs-th sort-key="ctr"> CTR </vs-th>
-              <vs-th sort-key="win_rate"> Win Rate </vs-th>
+              <!-- <vs-th sort-key="win_rate"> Win Rate </vs-th> -->
               <vs-th sort-key="view"> View </vs-th>
               <vs-th sort-key="completed_view"> Completed View </vs-th>
             </template>
             <template slot-scope="{ data }">
               <vs-tr :data="tr" :key="indextr" v-for="(tr, indextr) in data">
-                {{ data }}
                 <vs-td :data="data[indextr].time">
                   {{
                     `${data[indextr].time.substring(0, 4)}-${data[
@@ -113,11 +115,11 @@
                   {{ data[indextr].click }}
                 </vs-td>
                 <vs-td :data="data[indextr].ctr">
-                  {{ data[indextr].ctr }}%
+                  {{ data[indextr].ctr == null ? 0 : data[indextr].ctr.toFixed(3) }}%
                 </vs-td>
-                <vs-td :data="data[indextr].win_rate">
-                  {{ data[indextr].win_rate }}%
-                </vs-td>
+                <!-- <vs-td :data="data[indextr].win_rate">
+                  {{ parseInt(data[indextr].win_rate).toFixed(2) }}%
+                </vs-td> -->
                 <vs-td :data="data[indextr].view">
                   {{ data[indextr].view }}
                 </vs-td>
@@ -142,7 +144,7 @@
               <vs-th sort-key="impression"> Impression </vs-th>
               <vs-th sort-key="click"> Click </vs-th>
               <vs-th sort-key="ctr"> CTR </vs-th>
-              <vs-th sort-key="win_rate"> Win Rate </vs-th>
+              <!-- <vs-th sort-key="win_rate"> Win Rate </vs-th> -->
               <vs-th sort-key="view"> View </vs-th>
               <vs-th sort-key="completed_view"> Completed View </vs-th>
             </template>
@@ -158,11 +160,11 @@
                   {{ data[indextr].click }}
                 </vs-td>
                 <vs-td :data="data[indextr].ctr">
-                  {{ data[indextr].ctr }}%
+                  {{ parseFloat(data[indextr].ctr).toFixed(3) }}%
                 </vs-td>
-                <vs-td :data="data[indextr].winrate">
-                  {{ data[indextr].winrate }}%
-                </vs-td>
+                <!-- <vs-td :data="data[indextr].winrate">
+                  {{ parseInt(data[indextr].winrate).toFixed(2) }}%
+                </vs-td> -->
                 <vs-td :data="data[indextr].view">
                   {{ data[indextr].view }}
                 </vs-td>
@@ -187,7 +189,7 @@
               <vs-th sort-key="impression"> Impression </vs-th>
               <vs-th sort-key="click"> Click </vs-th>
               <vs-th sort-key="ctr"> CTR </vs-th>
-              <vs-th sort-key="win_rate"> Win Rate </vs-th>
+              <!-- <vs-th sort-key="win_rate"> Win Rate </vs-th> -->
               <vs-th sort-key="view"> View </vs-th>
               <vs-th sort-key="completed_view"> Completed View </vs-th>
             </template>
@@ -203,11 +205,11 @@
                   {{ data[indextr].click }}
                 </vs-td>
                 <vs-td :data="data[indextr].ctr">
-                  {{ data[indextr].ctr }}%
+                  {{ parseFloat(data[indextr].ctr).toFixed(3) }}%
                 </vs-td>
-                <vs-td :data="data[indextr].winrate">
-                  {{ data[indextr].winrate }}%
-                </vs-td>
+                <!-- <vs-td :data="data[indextr].winrate">
+                  {{ parseInt(data[indextr].winrate).toFixed(2) }}%
+                </vs-td> -->
                 <vs-td :data="data[indextr].view">
                   {{ data[indextr].view }}
                 </vs-td>
@@ -238,10 +240,10 @@ export default {
       inventory: [],
       dailyDelivery: [],
       campaignName: "",
-      impression: "",
-      click: "",
-      ctr: "",
-      winrate: "",
+      impression: 0,
+      click: 0,
+      ctr: 0,
+      winrate: 0,
       adSizeOptions: {
         labels: [],
       },
@@ -282,7 +284,12 @@ export default {
       },
     };
   },
+  computed: {},
   methods: {
+    formatNumber(number) {
+      var nfObject = new Intl.NumberFormat("en-US");
+      return nfObject.format(parseInt(number));
+    },
     goBack() {
       return this.$router.go(-1);
     },
@@ -296,7 +303,10 @@ export default {
         obj.win_rate,
         obj.view,
         obj.completed_view,
-        `${obj.time.substring(0, 4)}-${obj.time.substring(4,6)}-${obj.time.substring(6, 8)}`,
+        `${obj.time.substring(0, 4)}-${obj.time.substring(
+          4,
+          6
+        )}-${obj.time.substring(6, 8)}`,
       ]);
 
       const header = [
@@ -428,25 +438,58 @@ export default {
     fetchAdditionalInformation() {
       const campaign = this.$route.query.campaign;
       const id = this.$route.query.id;
+
+      const email = this.$store.state.AppActiveUser.email;
       axios
-        .get(`Reporting/getCampaignInformation/${campaign}/${id}`)
+        .get(`Reporting/getCampaignInformation/${campaign}/${id}`, {
+          params: { email: email },
+        })
         .then((response) => {
-          this.dailyDelivery = response.data[6];
-          this.inventory = response.data[1];
-          this.creatives = response.data[0];
-
-          response.data[5].forEach((element) => {
+          var init = 0;
+          response.data[0].forEach((element) => {
+            var ctr = element.ctr
+            if (ctr === null) {
+              return 0
+            }
+            init += ctr;
+            this.ctr = init;
             this.campaignName = element.campaign_name;
-            this.click = element.click;
-            this.ctr = element.ctr;
-            this.impression = element.impression;
-            this.winrate = element.win_rate;
+            this.click += parseInt(element.click);
+            this.impression += parseInt(element.impression);
+            this.winrate += parseInt(element.winrate);
+
+
+            // add to creatives
+            this.creatives.push({
+              creative_name: element.creative_name,
+              impression: element.impression,
+              click: element.click,
+              ctr: ctr,
+              view: element.view,
+              completed_view: element.completed_view
+            })
           });
 
-          response.data[2].forEach((element) => {
-            this.dailyClick[0].data.push(element.click);
-            this.dailyImpression[0].data.push(element.impression);
+          response.data[1].forEach((element) => {
+            var ctr = element.ctr
+            if (ctr === null) {
+              return 0
+            }
+
+            // add to creatives
+            this.inventory.push({
+              inventory_name: element.inventory_name,
+              impression: element.impression,
+              click: element.click,
+              ctr: ctr,
+              view: element.view,
+              completed_view: element.completed_view
+            })
           });
+
+          // this.creatives = response.data[0];
+          // this.inventory = response.data[1];
+          this.dailyDelivery = response.data[5];
 
           response.data[4].map((item) => {
             this.adSizeOptions.labels.push(item.creative_size);

@@ -45,7 +45,7 @@ const router = new Router({
         },
         {
           path: '/reporting-detail/',
-          name: 'reporting',
+          name: 'reporting-detail',
           component: () => import('./views/pages/CampaignDetail.vue'),
           meta: {
             authRequired: true,
@@ -84,6 +84,11 @@ const router = new Router({
             }
             next()
           }
+        },
+        {
+          path: '/register',
+          name: 'page-register',
+          component: () => import('@/views/pages/Register.vue'),
         },
         {
           path: '/pages/error-404',

@@ -15,7 +15,12 @@ const mutations = {
   LOGOUT(state) {
     state.AppActiveUser = []
   },
-
+  SWITCH_LOADING(state, payload) {
+    state.loadingState = payload
+  },
+  CHANGE_STATUS(state) {
+    state.AppActiveUser.status = 0
+  },
 
   // /////////////////////////////////////////////
   // COMPONENTS

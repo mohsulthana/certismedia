@@ -1,13 +1,3 @@
-<!-- =========================================================================================
-    File Name: Login.vue
-    Description: Login Page
-    ----------------------------------------------------------------------------------------
-    Item Name: Vuexy - Vuejs, HTML & Laravel Admin Dashboard Template
-      Author: Pixinvent
-    Author URL: http://www.themeforest.net/user/pixinvent
-========================================================================================== -->
-
-
 <template>
   <div
     class="h-screen flex w-full bg-img vx-row no-gutter items-center justify-center"
@@ -30,7 +20,8 @@
                 <div class="vx-card__title mb-4">
                   <h4 class="mb-4">Login</h4>
                   <p>
-                    Welcome to the Certis DSP reporting  platform, please login to your account
+                    Welcome to the Certis DSP reporting platform, please login
+                    to your account
                   </p>
                 </div>
 
@@ -55,6 +46,12 @@
                     v-model="password"
                     class="w-full mt-6"
                   />
+                  <vs-button
+                    type="border"
+                    class="float-left my-8"
+                    to="/register"
+                    >Register</vs-button
+                  >
                   <vs-button @click="login" class="float-right my-8"
                     >Login</vs-button
                   >
@@ -86,20 +83,40 @@ export default {
       this.$store
         .dispatch("login", data)
         .then((response) => {
-          this.$vs.notify({
-            color: "success",
-            title: "Success",
-            text: response.data.message,
-          });
-          this.$router.push('/')
+          if (
+            response.data.status_dashboard == 0 ||
+            response.data.status_reporting == 0
+          ) {
+            this.$vs.notify({
+              color: "warning",
+              title: "Your account is not ready,",
+              text:
+                "Your account is in synchronization. Please try again later.",
+            });
+          } else {
+            if (response.data.state == "warning") {
+              this.$vs.notify({
+                color: response.data.state,
+                title: response.data.state.toUpperCase(),
+                text: response.data.message,
+              });
+            } else {
+              this.$vs.notify({
+                color: response.data.state,
+                title: response.data.state.toUpperCase(),
+                text: response.data.message,
+              });
+              this.$router.push("/");
+            }
+          }
         })
         .catch((error) => {
+          console.log(error);
           this.$vs.notify({
             color: "danger",
             title: "Can't login",
             text: error.data.messages.error,
           });
-          console.error(error);
         });
     },
   },
