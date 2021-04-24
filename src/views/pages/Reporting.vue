@@ -7,9 +7,9 @@
         class="overflow-hidden"
       >
         <template slot="actions">
-          <vs-button icon="refresh" @click="fetchDataManually"
+          <!-- <vs-button icon="refresh" @click="fetchDataManually"
             >Fetch Data Manually</vs-button
-          >
+          > -->
         </template>
         <vs-table
           v-model="selected"

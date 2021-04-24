@@ -39,12 +39,13 @@
         <vx-card class="overflow-hidden">
           <vs-list>
             <vs-list-header title="Total Delivery"></vs-list-header>
-            <vs-list-item :title="`Impression: ${impression}`"></vs-list-item>
-            <vs-list-item :title="`Click: ${click}`"></vs-list-item>
-            <vs-list-item :title="`CTR: ${ctr}%`"></vs-list-item>
-            <!-- <vs-list-item
-              :title="`Win Rate: ${parseInt(winrate).toFixed(2)}%`"
-            ></vs-list-item> -->
+            <vs-list-item
+              :title="`Impression: ${formatNumber(impression)}`"
+            ></vs-list-item>
+            <vs-list-item
+              :title="`Click: ${formatNumber(click)}`"
+            ></vs-list-item>
+            <vs-list-item :title="`CTR: ${parseFloat(ctr).toFixed(3)}%`"></vs-list-item>
           </vs-list>
         </vx-card>
       </div>
@@ -114,7 +115,7 @@
                   {{ data[indextr].click }}
                 </vs-td>
                 <vs-td :data="data[indextr].ctr">
-                  {{ data[indextr].ctr == null ? 0 : data[indextr].ctr }}%
+                  {{ data[indextr].ctr == null ? 0 : data[indextr].ctr.toFixed(3) }}%
                 </vs-td>
                 <!-- <vs-td :data="data[indextr].win_rate">
                   {{ parseInt(data[indextr].win_rate).toFixed(2) }}%
@@ -159,7 +160,7 @@
                   {{ data[indextr].click }}
                 </vs-td>
                 <vs-td :data="data[indextr].ctr">
-                  {{ data[indextr].ctr == null ? 0 : data[indextr].ctr }}%
+                  {{ parseFloat(data[indextr].ctr).toFixed(3) }}%
                 </vs-td>
                 <!-- <vs-td :data="data[indextr].winrate">
                   {{ parseInt(data[indextr].winrate).toFixed(2) }}%
@@ -204,7 +205,7 @@
                   {{ data[indextr].click }}
                 </vs-td>
                 <vs-td :data="data[indextr].ctr">
-                  {{ data[indextr].ctr == null ? 0 : data[indextr].ctr }}%
+                  {{ parseFloat(data[indextr].ctr).toFixed(3) }}%
                 </vs-td>
                 <!-- <vs-td :data="data[indextr].winrate">
                   {{ parseInt(data[indextr].winrate).toFixed(2) }}%
@@ -283,7 +284,12 @@ export default {
       },
     };
   },
+  computed: {},
   methods: {
+    formatNumber(number) {
+      var nfObject = new Intl.NumberFormat("en-US");
+      return nfObject.format(parseInt(number));
+    },
     goBack() {
       return this.$router.go(-1);
     },
@@ -439,19 +445,50 @@ export default {
           params: { email: email },
         })
         .then((response) => {
+          var init = 0;
           response.data[0].forEach((element) => {
-            if (element.ctr === null) {
-              return;
+            var ctr = element.ctr
+            if (ctr === null) {
+              return 0
             }
-            this.ctr += element.ctr;
+            init += ctr;
+            this.ctr = init;
             this.campaignName = element.campaign_name;
             this.click += parseInt(element.click);
             this.impression += parseInt(element.impression);
             this.winrate += parseInt(element.winrate);
+
+
+            // add to creatives
+            this.creatives.push({
+              creative_name: element.creative_name,
+              impression: element.impression,
+              click: element.click,
+              ctr: ctr,
+              view: element.view,
+              completed_view: element.completed_view
+            })
           });
 
-          this.creatives = response.data[0];
-          this.inventory = response.data[1];
+          response.data[1].forEach((element) => {
+            var ctr = element.ctr
+            if (ctr === null) {
+              return 0
+            }
+
+            // add to creatives
+            this.inventory.push({
+              inventory_name: element.inventory_name,
+              impression: element.impression,
+              click: element.click,
+              ctr: ctr,
+              view: element.view,
+              completed_view: element.completed_view
+            })
+          });
+
+          // this.creatives = response.data[0];
+          // this.inventory = response.data[1];
           this.dailyDelivery = response.data[5];
 
           response.data[4].map((item) => {

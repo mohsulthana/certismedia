@@ -4,7 +4,7 @@
     <div class="vx-col w-full mb-base">
       <vx-card title="Dashboard" class="overflow-hidden">
         <template slot="actions">
-          <vs-button icon="refresh" @click="fetchDataManually">Fetch Data Manually</vs-button>
+          <!-- <vs-button icon="refresh" @click="fetchDataManually">Fetch Data Manually</vs-button> -->
         </template>
         <vs-table
           v-model="selected"
@@ -47,7 +47,7 @@
               </vs-td>
 
               <vs-td :data="data[indextr].ctr">
-                {{ data[indextr].ctr == null ? 0 : data[indextr].ctr }}%
+                {{ parseFloat(data[indextr].ctr).toFixed(3) }}%
               </vs-td>
 
               <!-- <vs-td :data="data[indextr].win_rate">
@@ -91,7 +91,20 @@ export default {
     fetchImpressions() {
       const email = this.$store.state.AppActiveUser.email;
       axios.get("dashboard", { params: { email: email } }).then((response) => {
-        this.dashboard = response.data;
+        response.data.forEach((element) => {
+            var ctr = element.ctr
+            if (ctr === null) {
+              return 0
+            }
+          this.dashboard.push({
+            click: element.click,
+            impression: element.impression,
+            campaign_name: element.campaign_name,
+            completed_view: element.completed_view,
+            view: element.view,
+            ctr: ctr
+          })
+        })
       });
     },
     seeDetail(args) {
