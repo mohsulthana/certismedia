@@ -192,16 +192,22 @@ export default {
       this.$store
         .dispatch("daftar", data)
         .then((response) => {
-          this.$nextTick(() => {
-            this.$vs.dialog({
-              type: "confirm",
-              color: "danger",
-              title: `Sync the data`,
-              text: "User registered. Please hit button below to sync the data to your account",
-              accept: this.acceptAlert,
-              parameters: response.data.id,
-            });
+          this.$vs.notify({
+            color: "success",
+            title: "Success",
+            text: "User succesfully registered. Please login",
           });
+          this.$router.push("login");
+          // this.$nextTick(() => {
+          // this.$vs.dialog({
+          //   type: "confirm",
+          //   color: "danger",
+          //   title: `Sync the data`,
+          //   text: "User registered. Please hit button below to sync the data to your account",
+          //   accept: this.acceptAlert,
+          //   parameters: response.data.id,
+          // });
+          // });
         })
         .catch((error) => {
           this.$vs.notify({

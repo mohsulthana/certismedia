@@ -75,9 +75,6 @@ export default {
     };
   },
   methods: {
-    registerUser() {
-      alert("Hello");
-    },
     login() {
       const data = {
         username: this.username,
@@ -86,19 +83,31 @@ export default {
       this.$store
         .dispatch("login", data)
         .then((response) => {
-          if (response.data.state == "warning") {
+          if (
+            response.data.status_dashboard == 0 ||
+            response.data.status_reporting == 0
+          ) {
             this.$vs.notify({
-              color: response.data.state,
-              title: response.data.state.toUpperCase(),
-              text: response.data.message,
+              color: "warning",
+              title: "Your account is not ready,",
+              text:
+                "Your account is in synchronization. Please try again later.",
             });
           } else {
-            this.$vs.notify({
-              color: response.data.state,
-              title: response.data.state.toUpperCase(),
-              text: response.data.message,
-            });
-            this.$router.push("/");
+            if (response.data.state == "warning") {
+              this.$vs.notify({
+                color: response.data.state,
+                title: response.data.state.toUpperCase(),
+                text: response.data.message,
+              });
+            } else {
+              this.$vs.notify({
+                color: response.data.state,
+                title: response.data.state.toUpperCase(),
+                text: response.data.message,
+              });
+              this.$router.push("/");
+            }
           }
         })
         .catch((error) => {
