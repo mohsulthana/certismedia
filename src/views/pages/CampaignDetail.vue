@@ -40,22 +40,24 @@
           <vs-list>
             <vs-list-header title="Total Delivery"></vs-list-header>
             <vs-list-item
-              :title="`Impression: ${formatNumber(impression)}`"
+              :title="`Impressions: ${formatNumber(impressions)}`"
             ></vs-list-item>
             <vs-list-item
               :title="`Click: ${formatNumber(click)}`"
             ></vs-list-item>
-            <vs-list-item :title="`CTR: ${parseFloat(ctr).toFixed(3)}%`"></vs-list-item>
+            <vs-list-item
+              :title="`CTR: ${parseFloat(ctr).toFixed(2)}%`"
+            ></vs-list-item>
           </vs-list>
         </vx-card>
       </div>
       <!-- <div class="vx-col w-full lg:w-1/1 sm:w-1/1 mb-base">
-        <vx-card title="Daily Impression" class="overflow-hidden">
+        <vx-card title="Daily Impressions" class="overflow-hidden">
           <apexchart
             width="100%"
             type="line"
-            :options="dailyImpressionOption"
-            :series="dailyImpression"
+            :options="dailyImpressionsOption"
+            :series="dailyImpressions"
           ></apexchart>
         </vx-card>
       </div>
@@ -89,10 +91,9 @@
             </template>
             <template slot="thead">
               <vs-th sort-key="time"> Day </vs-th>
-              <vs-th sort-key="impression"> Impression </vs-th>
+              <vs-th sort-key="impressions"> Impressions </vs-th>
               <vs-th sort-key="click"> Click </vs-th>
               <vs-th sort-key="ctr"> CTR </vs-th>
-              <!-- <vs-th sort-key="win_rate"> Win Rate </vs-th> -->
               <vs-th sort-key="view"> View </vs-th>
               <vs-th sort-key="completed_view"> Completed View </vs-th>
             </template>
@@ -100,31 +101,23 @@
               <vs-tr :data="tr" :key="indextr" v-for="(tr, indextr) in data">
                 <vs-td :data="data[indextr].time">
                   {{
-                    `${data[indextr].time.substring(0, 4)}-${data[
-                      indextr
-                    ].time.substring(4, 6)}-${data[indextr].time.substring(
-                      6,
-                      8
-                    )}`
+                    `${data[indextr].time}`
                   }}
                 </vs-td>
-                <vs-td :data="data[indextr].impression">
-                  {{ data[indextr].impression }}
+                <vs-td :data="data[indextr].impressions">
+                  {{ data[indextr].impressions }}
                 </vs-td>
-                <vs-td :data="data[indextr].click">
-                  {{ data[indextr].click }}
+                <vs-td :data="data[indextr].clicks">
+                  {{ data[indextr].clicks }}
                 </vs-td>
                 <vs-td :data="data[indextr].ctr">
-                  {{ data[indextr].ctr == null ? 0 : data[indextr].ctr.toFixed(3) }}%
+                  {{ parseFloat(data[indextr].ctr).toFixed(2) }}%
                 </vs-td>
-                <!-- <vs-td :data="data[indextr].win_rate">
-                  {{ parseInt(data[indextr].win_rate).toFixed(2) }}%
-                </vs-td> -->
-                <vs-td :data="data[indextr].view">
-                  {{ data[indextr].view }}
+                <vs-td :data="data[indextr].views">
+                  {{ data[indextr].views }}
                 </vs-td>
-                <vs-td :data="data[indextr].completed_view">
-                  {{ data[indextr].completed_view }}
+                <vs-td :data="data[indextr].completed_views">
+                  {{ data[indextr].completed_views }}
                 </vs-td>
               </vs-tr>
             </template>
@@ -141,10 +134,9 @@
             </template>
             <template slot="thead">
               <vs-th sort-key="creative_name"> Name </vs-th>
-              <vs-th sort-key="impression"> Impression </vs-th>
+              <vs-th sort-key="impressions"> Impressions </vs-th>
               <vs-th sort-key="click"> Click </vs-th>
               <vs-th sort-key="ctr"> CTR </vs-th>
-              <!-- <vs-th sort-key="win_rate"> Win Rate </vs-th> -->
               <vs-th sort-key="view"> View </vs-th>
               <vs-th sort-key="completed_view"> Completed View </vs-th>
             </template>
@@ -153,23 +145,20 @@
                 <vs-td :data="data[indextr].creative_name">
                   {{ data[indextr].creative_name }}
                 </vs-td>
-                <vs-td :data="data[indextr].impression">
-                  {{ data[indextr].impression }}
+                <vs-td :data="data[indextr].impressions">
+                  {{ data[indextr].impressions }}
                 </vs-td>
-                <vs-td :data="data[indextr].click">
-                  {{ data[indextr].click }}
+                <vs-td :data="data[indextr].clicks">
+                  {{ data[indextr].clicks }}
                 </vs-td>
                 <vs-td :data="data[indextr].ctr">
-                  {{ parseFloat(data[indextr].ctr).toFixed(3) }}%
+                  {{ parseFloat(data[indextr].ctr).toFixed(2) }}%
                 </vs-td>
-                <!-- <vs-td :data="data[indextr].winrate">
-                  {{ parseInt(data[indextr].winrate).toFixed(2) }}%
-                </vs-td> -->
-                <vs-td :data="data[indextr].view">
-                  {{ data[indextr].view }}
+                <vs-td :data="data[indextr].views">
+                  {{ data[indextr].views }}
                 </vs-td>
-                <vs-td :data="data[indextr].completed_view">
-                  {{ data[indextr].completed_view }}
+                <vs-td :data="data[indextr].completed_views">
+                  {{ data[indextr].completed_views }}
                 </vs-td>
               </vs-tr>
             </template>
@@ -186,10 +175,9 @@
             </template>
             <template slot="thead">
               <vs-th sort-key="inventory_name"> Name </vs-th>
-              <vs-th sort-key="impression"> Impression </vs-th>
+              <vs-th sort-key="impressions"> Impressions </vs-th>
               <vs-th sort-key="click"> Click </vs-th>
               <vs-th sort-key="ctr"> CTR </vs-th>
-              <!-- <vs-th sort-key="win_rate"> Win Rate </vs-th> -->
               <vs-th sort-key="view"> View </vs-th>
               <vs-th sort-key="completed_view"> Completed View </vs-th>
             </template>
@@ -198,23 +186,20 @@
                 <vs-td :data="data[indextr].inventory_name">
                   {{ data[indextr].inventory_name }}
                 </vs-td>
-                <vs-td :data="data[indextr].impression">
-                  {{ data[indextr].impression }}
+                <vs-td :data="data[indextr].impressions">
+                  {{ data[indextr].impressions }}
                 </vs-td>
-                <vs-td :data="data[indextr].click">
-                  {{ data[indextr].click }}
+                <vs-td :data="data[indextr].clicks">
+                  {{ data[indextr].clicks }}
                 </vs-td>
                 <vs-td :data="data[indextr].ctr">
-                  {{ parseFloat(data[indextr].ctr).toFixed(3) }}%
+                  {{ parseFloat(data[indextr].ctr).toFixed(2) }}%
                 </vs-td>
-                <!-- <vs-td :data="data[indextr].winrate">
-                  {{ parseInt(data[indextr].winrate).toFixed(2) }}%
-                </vs-td> -->
-                <vs-td :data="data[indextr].view">
-                  {{ data[indextr].view }}
+                <vs-td :data="data[indextr].views">
+                  {{ data[indextr].views }}
                 </vs-td>
-                <vs-td :data="data[indextr].completed_view">
-                  {{ data[indextr].completed_view }}
+                <vs-td :data="data[indextr].completed_views">
+                  {{ data[indextr].completed_views }}
                 </vs-td>
               </vs-tr>
             </template>
@@ -236,11 +221,12 @@ export default {
   },
   data() {
     return {
+      campaign_id: this.$route.query.campaign_id,
       creatives: [],
       inventory: [],
       dailyDelivery: [],
       campaignName: "",
-      impression: 0,
+      impressions: 0,
       click: 0,
       ctr: 0,
       winrate: 0,
@@ -252,16 +238,16 @@ export default {
         labels: [],
       },
       exchangeSeries: [],
-      dailyImpression: [
+      dailyImpressions: [
         {
-          name: "DailyImpression",
+          name: "DailyImpressions",
           data: [],
         },
       ],
-      dailyImpressionOption: {
+      dailyImpressionsOption: {
         height: "200px",
         chart: {
-          id: "daily-impression",
+          id: "daily-impressions",
         },
         xaxis: {
           categories: [],
@@ -288,7 +274,7 @@ export default {
   methods: {
     formatNumber(number) {
       var nfObject = new Intl.NumberFormat("en-US");
-      return nfObject.format(parseInt(number));
+      return nfObject.format(parseFloat(number));
     },
     goBack() {
       return this.$router.go(-1);
@@ -297,7 +283,7 @@ export default {
       const daily = this.dailyDelivery.map((obj) => [
         this.campaignName,
         obj.campaign_id,
-        obj.impression,
+        obj.impressions,
         obj.click,
         obj.ctr,
         obj.win_rate,
@@ -312,7 +298,7 @@ export default {
       const header = [
         "Campaign",
         "Campaign ID",
-        "Impression",
+        "Impressions",
         "Click",
         "CTR",
         "Win Rate",
@@ -349,7 +335,7 @@ export default {
     downloadInventoryAsCSV() {
       const inventory = this.inventory.map((obj) => [
         obj.inventory_name,
-        obj.impression,
+        obj.impressions,
         obj.click,
         obj.ctr,
         obj.win_rate,
@@ -359,7 +345,7 @@ export default {
 
       const header = [
         "Inventory Name",
-        "Impression",
+        "Impressions",
         "Click",
         "CTR",
         "Win Rate",
@@ -395,7 +381,7 @@ export default {
     downloadCreativeAsCSV() {
       const creatives = this.creatives.map((obj) => [
         obj.creative_name,
-        obj.impression,
+        obj.impressions,
         obj.click,
         obj.ctr,
         obj.win_rate,
@@ -405,7 +391,7 @@ export default {
 
       const header = [
         "Creative Name",
-        "Impression",
+        "Impressions",
         "Click",
         "CTR",
         "Win Rate",
@@ -435,76 +421,78 @@ export default {
       link.click();
       document.body.removeChild(link);
     },
-    fetchAdditionalInformation() {
-      const campaign = this.$route.query.campaign;
-      const id = this.$route.query.id;
-
-      const email = this.$store.state.AppActiveUser.email;
-      axios
-        .get(`Reporting/getCampaignInformation/${campaign}/${id}`, {
-          params: { email: email },
-        })
-        .then((response) => {
-          var init = 0;
-          response.data[0].forEach((element) => {
-            var ctr = element.ctr
-            if (ctr === null) {
-              return 0
-            }
-            init += ctr;
-            this.ctr = init;
-            this.campaignName = element.campaign_name;
-            this.click += parseInt(element.click);
-            this.impression += parseInt(element.impression);
-            this.winrate += parseInt(element.winrate);
-
-
-            // add to creatives
-            this.creatives.push({
-              creative_name: element.creative_name,
-              impression: element.impression,
-              click: element.click,
-              ctr: ctr,
-              view: element.view,
-              completed_view: element.completed_view
-            })
+    fetchCreative() {
+      axios.get(`reporting/creative/${this.campaign_id}`).then((response) => {
+        response.data.forEach((element) => {
+          this.creatives.push({
+            clicks: parseFloat(element.clicks),
+            impressions: parseFloat(element.impressions),
+            creative_name: element.creative_name,
+            completed_views: parseFloat(element.completed_views),
+            views: parseFloat(element.views),
+            ctr: element.ctr == null ? 0 : parseFloat(element.ctr),
           });
 
-          response.data[1].forEach((element) => {
-            var ctr = element.ctr
-            if (ctr === null) {
-              return 0
-            }
+          // total delivery
+          this.impressions += parseFloat(element.impressions)
+          this.click += parseFloat(element.clicks)
+          this.ctr += element.ctr == null ? 0.00 : (parseFloat(element.ctr) / element.ctr.length)
+          console.log(this.ctr)
+        });
 
-            // add to creatives
-            this.inventory.push({
-              inventory_name: element.inventory_name,
-              impression: element.impression,
-              click: element.click,
-              ctr: ctr,
-              view: element.view,
-              completed_view: element.completed_view
-            })
-          });
-
-          // this.creatives = response.data[0];
-          // this.inventory = response.data[1];
-          this.dailyDelivery = response.data[5];
-
-          response.data[4].map((item) => {
-            this.adSizeOptions.labels.push(item.creative_size);
-            this.adSizeSeries.push(parseInt(item.total));
-          });
-
-          response.data[3].map((item) => {
-            this.exchangeOptions.labels.push(item.exchange_name);
-            this.exchangeSeries.push(parseInt(item.total));
+      });
+    },
+    fetchDailyDelivery () {
+      axios.get(`reporting/daily/${this.campaign_id}`).then((response) => {
+        response.data.forEach((element) => {
+          this.dailyDelivery.push({
+            clicks: parseFloat(element.clicks),
+            impressions: parseFloat(element.impressions),
+            time: element.date_time,
+            completed_views: parseFloat(element.completed_views),
+            views: parseFloat(element.views),
+            ctr: element.ctr == null ? 0 : parseFloat(element.ctr),
           });
         });
+      });
     },
+    fetchInventory() {
+      axios.get(`reporting/inventory/${this.campaign_id}`).then((response) => {
+        response.data.forEach((element) => {
+          this.inventory.push({
+            clicks: parseFloat(element.clicks),
+            impressions: parseFloat(element.impressions),
+            inventory_name: element.inventory_name,
+            completed_views: parseFloat(element.completed_views),
+            views: parseFloat(element.views),
+            ctr: element.ctr == null ? 0 : parseFloat(element.ctr),
+          });
+        });
+      });
+    },
+    fetchAdSize() {
+      axios.get(`reporting/adsize/${this.campaign_id}`).then((response) => {
+        response.data.forEach((element) => {
+          this.adSizeSeries.push(parseFloat(element.impressions))
+          this.adSizeOptions.labels.push(element.creative_size)
+        })
+      });
+    },
+    fetchExchange() {
+      axios.get(`reporting/exchange/${this.campaign_id}`).then((response) => {
+        response.data.forEach((element) => {
+          this.exchangeSeries.push(parseFloat(element.impressions))
+          this.exchangeOptions.labels.push(element.exchange_name)
+        })
+      });
+    }
   },
   mounted() {
-    this.fetchAdditionalInformation();
+    this.fetchCreative();
+    this.fetchInventory();
+    this.fetchDailyDelivery();
+    this.fetchAdSize();
+    this.fetchExchange();
   },
 };
 </script>
