@@ -25,7 +25,7 @@
           </template>
 
           <template slot-scope="{ data }">
-            <vs-tr :data="tr" :key="indextr" v-for="(tr, indextr) in data">
+            <vs-tr :data="(tr)" :key="indextr" v-for="(tr, indextr) in data">
               <vs-td :data="data[indextr].campaign_name">
                 {{ data[indextr].campaign_name }}
               </vs-td>
@@ -52,24 +52,15 @@ export default {
     };
   },
   methods: {
-    fetchDataManually() {
-      const id = this.$store.state.AppActiveUser.id;
-      const email = this.$store.state.AppActiveUser.email;
-
-      axios.get(`fetch-report/${id}`, { params: { email: email } }).then(() => {
-        this.fetchImpressions();
-      });
-    },
     fetchImpressions() {
-      const email = this.$store.state.AppActiveUser.email;
-      axios.get("dashboard", { params: { email: email } }).then((response) => {
-        this.dashboard = response.data;
+      axios.get("reporting/dashboard").then((response) => {
+        this.dashboard = response.data
       });
     },
     seeDetail(args) {
       return this.$router.push({
-        path: "/reporting-detail/",
-        query: { id: args.id, campaign: args.campaign_id },
+        path: "/reporting-detail",
+        query: { campaign_id: args.campaign_id },
       });
     },
   },
