@@ -16,10 +16,10 @@
         >
           <template slot="thead">
             <vs-th sort-key="campaign_name"> Campaign Name </vs-th>
-            <vs-th sort-key="impression"> Impression </vs-th>
-            <vs-th sort-key="click"> Click </vs-th>
-            <vs-th sort-key="view"> View </vs-th>
-            <vs-th sort-key="completed_view"> Completed View </vs-th>
+            <vs-th sort-key="impressions"> Impression </vs-th>
+            <vs-th sort-key="clicks"> Click </vs-th>
+            <vs-th sort-key="views"> View </vs-th>
+            <vs-th sort-key="completed_views"> Completed View </vs-th>
             <vs-th sort-key="ctr"> CTR </vs-th>
             <!-- <vs-th sort-key="win_rate"> Win Rate </vs-th> -->
           </template>
@@ -30,24 +30,24 @@
                 {{ data[indextr].campaign_name }}
               </vs-td>
 
-              <vs-td :data="data[indextr].impression">
-                {{ data[indextr].impression }}
+              <vs-td :data="data[indextr].impressions">
+                {{ data[indextr].impressions }}
               </vs-td>
 
-              <vs-td :data="data[indextr].click">
-                {{ data[indextr].click }}
+              <vs-td :data="data[indextr].clicks">
+                {{ data[indextr].clicks }}
               </vs-td>
 
-              <vs-td :data="data[indextr].view">
-                {{ data[indextr].view }}
+              <vs-td :data="data[indextr].views">
+                {{ data[indextr].views }}
               </vs-td>
 
-              <vs-td :data="data[indextr].completed_view">
-                {{ data[indextr].completed_view }}
+              <vs-td :data="data[indextr].completed_views">
+                {{ data[indextr].completed_views }}
               </vs-td>
 
               <vs-td :data="data[indextr].ctr">
-                {{ parseFloat(data[indextr].ctr).toFixed(3) }}%
+                {{ parseFloat(data[indextr].ctr).toFixed(2) }}%
               </vs-td>
 
               <!-- <vs-td :data="data[indextr].win_rate">
@@ -81,35 +81,18 @@ export default {
     },
   },
   methods: {
-    fetchDataManually() {
-      const id = this.$store.state.AppActiveUser.id
-      axios.get(`fetch-dashboard/${id}`)
-        .then(() => {
-          this.fetchImpressions()
-        })
-    },
     fetchImpressions() {
-      const email = this.$store.state.AppActiveUser.email;
-      axios.get("dashboard", { params: { email: email } }).then((response) => {
+      axios.get("reporting/dashboard").then((response) => {
         response.data.forEach((element) => {
-            var ctr = element.ctr
-            if (ctr === null) {
-              return 0
-            }
           this.dashboard.push({
-            click: element.click,
-            impression: element.impression,
+            clicks: parseFloat(element.clicks),
+            impressions: parseFloat(element.impressions),
             campaign_name: element.campaign_name,
-            completed_view: element.completed_view,
-            view: element.view,
-            ctr: ctr
+            completed_views: parseFloat(element.completed_views),
+            views: parseFloat(element.views),
+            ctr: element.ctr == null ? 0 : parseFloat(element.ctr)
           })
         })
-      });
-    },
-    seeDetail(args) {
-      return this.$router.push({
-        path: `/campaign/detail/${args.campaign_id}`,
       });
     },
   },
