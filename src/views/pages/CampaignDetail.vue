@@ -46,7 +46,7 @@
               :title="`Click: ${formatNumber(click)}`"
             ></vs-list-item>
             <vs-list-item
-              :title="`CTR: ${parseFloat(ctr).toFixed(2)}%`"
+              :title="`CTR: ${formatNumber(ctr)}%`"
             ></vs-list-item>
           </vs-list>
         </vx-card>
@@ -274,7 +274,7 @@ export default {
   methods: {
     formatNumber(number) {
       var nfObject = new Intl.NumberFormat("en-US");
-      return nfObject.format(parseFloat(number));
+      return nfObject.format(parseFloat(number).toFixed(2));
     },
     goBack() {
       return this.$router.go(-1);
@@ -436,10 +436,8 @@ export default {
           // total delivery
           this.impressions += parseFloat(element.impressions)
           this.click += parseFloat(element.clicks)
-          this.ctr += element.ctr == null ? 0.00 : (parseFloat(element.ctr) / element.ctr.length)
-          console.log(this.ctr)
         });
-
+        this.ctr = this.click/this.impressions * 100
       });
     },
     fetchDailyDelivery () {
@@ -485,6 +483,11 @@ export default {
           this.exchangeOptions.labels.push(element.exchange_name)
         })
       });
+    },
+    fetchCampaignName() {
+      axios.get(`reporting/campaign_name/${this.campaign_id}`).then((response) => {
+        this.campaignName = response.data[0].campaign_name
+      })
     }
   },
   mounted() {
@@ -493,6 +496,7 @@ export default {
     this.fetchDailyDelivery();
     this.fetchAdSize();
     this.fetchExchange();
+    this.fetchCampaignName();
   },
 };
 </script>
