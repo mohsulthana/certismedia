@@ -308,6 +308,7 @@ import axios from "@/axios";
 import Papa from "papaparse";
 import DatePicker from "vue2-datepicker";
 import "vue2-datepicker/index.css";
+import Qs from "qs";
 
 export default {
   components: {
@@ -322,8 +323,10 @@ export default {
       to: "",
       dateRange: {},
       table: username + idUser,
+      line: this.$route.query.line,
       campaign_id: this.$route.query.campaign_id,
       creatives: [],
+      lines: [],
       inventory: [],
       dailyDelivery: [],
       campaignName: "",
@@ -348,35 +351,6 @@ export default {
         },
       },
       adSizeSeries: [],
-      exchangeOptions: {
-        dataLabels: {
-          enabled: true,
-          formatter: function (val) {
-            return val.toFixed(2) + "%";
-          },
-        },
-        // responsive: [
-        //   {
-        //     breakpoint: 480,
-        //     options: {
-        //       chart: {
-        //         width: 200,
-        //       },
-        //       legend: {
-        //         show: false,
-        //       },
-        //     },
-        //   },
-        // ],
-        labels: [],
-        noData: {
-          text: "There's no data",
-          align: "center",
-          verticalAlign: "middle",
-          offsetX: 0,
-          offsetY: 0,
-        },
-      },
       deviceOSSeries: [],
       deviceOSOptions: {
         dataLabels: {
@@ -403,6 +377,35 @@ export default {
         //     return label + " - " + opts.w.globals.series[opts.seriesIndex];
         //   },
         // },
+        labels: [],
+        noData: {
+          text: "There's no data",
+          align: "center",
+          verticalAlign: "middle",
+          offsetX: 0,
+          offsetY: 0,
+        },
+      },
+      exchangeOptions: {
+        dataLabels: {
+          enabled: true,
+          formatter: function (val) {
+            return val.toFixed(2) + "%";
+          },
+        },
+        // responsive: [
+        //   {
+        //     breakpoint: 480,
+        //     options: {
+        //       chart: {
+        //         width: 200,
+        //       },
+        //       legend: {
+        //         show: false,
+        //       },
+        //     },
+        //   },
+        // ],
         labels: [],
         noData: {
           text: "There's no data",
@@ -645,10 +648,61 @@ export default {
       link.click();
       document.body.removeChild(link);
     },
+    fetchLines() {
+      axios
+        .get(
+          `reporting/dashboard/${this.table}/${this.campaign_id}?from=${this.from}&to=${this.to}`,
+          {
+            params: {
+              filter: { line_id: this.line },
+            },
+            paramsSerializer: function (params) {
+              return Qs.stringify(params, { encode: false });
+            },
+          }
+        )
+        .then((response) => {
+          response.data.forEach((element) => {
+            element.lines.forEach((line) => {
+              this.lines.push({
+                line_name: line.line_name,
+                clicks: parseFloat(line.clicks),
+                impressions: parseFloat(line.impressions),
+                time: line.date_time,
+                completed_views: parseFloat(line.completed_views),
+                views: parseFloat(line.views),
+                ctr: line.ctr == null ? 0 : parseFloat(line.ctr),
+                landings: line.landings == null ? 0 : parseFloat(line.landings),
+                winrate:
+                  line.impressions == null || line.bids == null
+                    ? 0
+                    : (parseFloat(line.impressions) / parseFloat(line.bids)) *
+                      100,
+                registrations:
+                  line.registrations == null
+                    ? 0
+                    : parseFloat(line.registrations),
+                subscriptions:
+                  line.subscriptions == null
+                    ? 0
+                    : parseFloat(line.subscriptions),
+              });
+            });
+          });
+        });
+    },
     fetchCreative() {
       axios
         .get(
-          `reporting/creative/${this.table}/${this.campaign_id}?from=${this.from}&to=${this.to}`
+          `reporting/creative/${this.table}/${this.campaign_id}?from=${this.from}&to=${this.to}`,
+          {
+            params: {
+              filter: { line_id: this.line },
+            },
+            paramsSerializer: function (params) {
+              return Qs.stringify(params, { encode: false });
+            },
+          }
         )
         .then((response) => {
           response.data.forEach((element) => {
@@ -687,7 +741,15 @@ export default {
     fetchDailyDelivery() {
       axios
         .get(
-          `reporting/daily/${this.table}/${this.campaign_id}?from=${this.from}&to=${this.to}`
+          `reporting/daily/${this.table}/${this.campaign_id}?from=${this.from}&to=${this.to}`,
+          {
+            params: {
+              filter: { line_id: this.line },
+            },
+            paramsSerializer: function (params) {
+              return Qs.stringify(params, { encode: false });
+            },
+          }
         )
         .then((response) => {
           response.data.forEach((element) => {
@@ -721,7 +783,15 @@ export default {
     fetchInventory() {
       axios
         .get(
-          `reporting/inventory/${this.table}/${this.campaign_id}?from=${this.from}&to=${this.to}`
+          `reporting/inventory/${this.table}/${this.campaign_id}?from=${this.from}&to=${this.to}`,
+          {
+            params: {
+              filter: { line_id: this.line },
+            },
+            paramsSerializer: function (params) {
+              return Qs.stringify(params, { encode: false });
+            },
+          }
         )
         .then((response) => {
           response.data.forEach((element) => {
@@ -761,6 +831,7 @@ export default {
           },
         },
         labels: [],
+        colors: ["#0288D1", "#00796B", "#689F38", "#C2185B"],
         noData: {
           text: "There's no data",
           align: "center",
@@ -774,7 +845,15 @@ export default {
 
       axios
         .get(
-          `reporting/adsize/${this.table}/${this.campaign_id}?from=${this.from}&to=${this.to}`
+          `reporting/adsize/${this.table}/${this.campaign_id}?from=${this.from}&to=${this.to}`,
+          {
+            params: {
+              filter: { line_id: this.line },
+            },
+            paramsSerializer: function (params) {
+              return Qs.stringify(params, { encode: false });
+            },
+          }
         )
         .then((response) => {
           response.data.forEach((element) => {
@@ -795,6 +874,7 @@ export default {
           },
         },
         labels: [],
+        colors: ["#0288D1", "#00796B", "#689F38", "#C2185B"],
         noData: {
           text: "There's no data",
           align: "center",
@@ -807,10 +887,17 @@ export default {
 
       axios
         .get(
-          `reporting/exchange/${this.table}/${this.campaign_id}?from=${this.from}&to=${this.to}`
+          `reporting/exchange/${this.table}/${this.campaign_id}?from=${this.from}&to=${this.to}`,
+          {
+            params: {
+              filter: { line_id: this.line },
+            },
+            paramsSerializer: function (params) {
+              return Qs.stringify(params, { encode: false });
+            },
+          }
         )
         .then((response) => {
-          console.log(response);
           response.data.forEach((element) => {
             this.exchangeSeries.push(parseFloat(element.impressions));
             this.exchangeOptions.labels.push(element.exchange_name);
@@ -860,20 +947,29 @@ export default {
         });
     },
     fetchCampaignName() {
-      axios.get(`reporting/get_campaign/${this.table}`).then((response) => {
-        const campaignId = this.$route.query.campaign_id;
-        response.data.forEach((element) => {
-          if (element.campaign_id == campaignId) {
-            this.campaignName = element.campaign_name;
-          }
+      axios
+        .get(`reporting/get_campaign/${this.table}`, {
+          params: {
+            filter: { line_id: this.line },
+          },
+          paramsSerializer: function (params) {
+            return Qs.stringify(params, { encode: false });
+          },
+        })
+        .then((response) => {
+          const campaignId = this.$route.query.campaign_id;
+          response.data.forEach((element) => {
+            if (element.campaign_id == campaignId) {
+              this.campaignName = element.campaign_name;
+            }
+          });
         });
-      });
     },
   },
   mounted() {
     this.fetchCreative();
-    this.fetchInventory();
     this.fetchDailyDelivery();
+    this.fetchInventory();
     this.fetchAdSize();
     this.fetchExchange();
     this.fetchCampaignName();

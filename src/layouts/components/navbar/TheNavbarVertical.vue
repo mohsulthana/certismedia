@@ -22,8 +22,23 @@
         <!-- <bookmarks :navbarColor="navbarColor" v-if="windowWidth >= 992" /> -->
 
         <vs-spacer />
+        <vs-spacer />
+        <vs-spacer />
+        <vs-spacer />
+        <vs-spacer />
+        <vs-spacer />
+        <vs-spacer />
+        <vs-spacer />
+        <vs-spacer />
+        <vs-spacer />
+        <vs-spacer />
+        <vs-spacer />
+        <vs-spacer />
+        <vs-spacer />
+        <vs-spacer />
+        <vs-spacer />
 
-        <search-bar />
+        <!-- <search-bar /> -->
 
         <!-- <notification-drop-down /> -->
 

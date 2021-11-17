@@ -10,6 +10,7 @@
 
 import Vue from 'vue'
 import App from './App.vue'
+import vuetify from './plugins/vuetify';
 
 // Vuesax Component Framework
 import Vuesax from 'vuesax'
@@ -30,10 +31,14 @@ import '../themeConfig.js'
 // Globally Registered Components
 import './globalComponents.js'
 
-// Date picker
-import DateRangePicker from 'vue2-daterange-picker'
-Vue.use(DateRangePicker)
+import VueMeta from 'vue-meta'
+Vue.use(VueMeta)
 
+import VueDatePicker from '@mathieustan/vue-datepicker';
+import '@mathieustan/vue-datepicker/dist/vue-datepicker.min.css';
+Vue.use(VueDatePicker, {
+  lang: 'id'
+});
 
 // Styles: SCSS
 import './assets/scss/main.scss'
@@ -73,6 +78,7 @@ require('./assets/css/iconfont.css')
 Vue.config.productionTip = false
 
 new Vue({
+    vuetify,
     router,
     store,
     render: h => h(App)
