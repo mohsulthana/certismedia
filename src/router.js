@@ -53,6 +53,15 @@ const router = new Router({
           }
         },
         {
+          path: '/reporting-detail-line/',
+          name: 'reporting-detail',
+          component: () => import('./views/pages/CampaignDetailLine.vue'),
+          meta: {
+            authRequired: true,
+            parent: 'reporting'
+          }
+        },
+        {
           path: '/reporting',
           name: 'reporting',
           component: () => import('./views/pages/Reporting.vue'),
